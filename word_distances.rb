@@ -1,9 +1,10 @@
 words = File.read(ARGV[0])
 
-w1 = ARGV[1]
-w2 = ARGV[2]
+word1 = ARGV[1]
+word2 = ARGV[2]
 count = 0
-last_w1_loc = last_w2_loc = min_dist = 1.0/0.0
+
+words_dict = {}
 
 for word in words.split
 	if [nil, ' '].include?(word)
@@ -11,14 +12,25 @@ for word in words.split
 		next
 	end
 	count += 1
-	last_w1_loc = count if word == w1
-	last_w2_loc = count if word == w2
-	abs_diff = (last_w1_loc - last_w2_loc).abs - 1
-	puts "min_dist: #{min_dist}\tlast_w1_loc: #{last_w1_loc}\tlast_w2_loc: #{last_w2_loc}"	if abs_diff < 0
-	if abs_diff < min_dist
-		min_dist = abs_diff 
-		puts "Min distance changed to #{min_dist} when scanning #{word} at position #{count}"
-	end
+	words_dict[word] ||= []
+	words_dict[word] << count
 end
 
-puts "Minimum distance is #{min_dist}"
+word1_locs = words_dict[word1].dup
+word2_locs = words_dict[word2].dup
+global_min_distance = 1.0/0.0
+
+while(word1_locs.length > 0 && word2_locs.length > 0)
+	start = [word1_locs.first, word2_locs.first].min
+	if word1_locs.first == start 
+		word1_locs.shift
+		look_in = word2_locs
+	else
+		word2_locs.shift
+		look_in = word1_locs
+	end
+	current_min_dist = look_in.map{|v| (v - start - 1)}.min
+	global_min_distance = current_min_dist if current_min_dist < global_min_distance
+end
+
+puts "The shortest distance between '#{word1}' and '#{word2}' is #{global_min_distance}"
