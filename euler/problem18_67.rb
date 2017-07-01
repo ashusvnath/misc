@@ -15,7 +15,9 @@ triangle_text =<<END
 63 66 04 68 89 53 67 30 73 16 69 87 40 31
 04 62 98 27 23 09 70 98 73 93 38 53 60 04 23
 END
-
+if ARGV.length == 1
+  triangle_text = File.read(ARGV.pop)
+end
 triangle = triangle_text.split("\n").map{|l| l.split(' ').map(&:to_i)}
 
 class Array
