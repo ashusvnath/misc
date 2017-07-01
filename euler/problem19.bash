@@ -1,0 +1,1 @@
+seq 1901 2000 | xargs -n1 cal | cut -c1,2,23,24,45,46 | grep -a1 Su | grep -o 1 | paste -sd+ - | bc
