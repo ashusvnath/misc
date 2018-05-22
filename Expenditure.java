@@ -5,33 +5,41 @@ import java.math.*;
 import java.util.regex.*;
 
 public class Expenditure {
-  interface Median {
-    float of(List<Integer> l);
+  static float median(int[] a, int d){
+    int idx = d/2;
+    int count = 0;
+    int i = 0;
+    int j = -1;
+    while(i < 200 && count + a[i] < idx) {
+      count += a[i];
+      if(a[i] != 0) j = i;
+      i++;
+    }
+    int k = idx - count;
+    if(a[i] == k && a[i] == 1){
+      return (d%2 == 0) ? (i + j)/2.0f : i;
+    }
+    return i;
   }
 
   static int activityNotifications(int[] expenditure, int n, int d) {
-    List<Integer> history = new ArrayList<Integer>();
-    for(Integer i : Arrays.copyOfRange(expenditure, 0, d-1)){
-      history.add(i);
+    int[] history = new int[202];
+    for(int i = 0 ; i < d ; i++){
+      history[expenditure[i]]++;
     }
-    int old = -1;
-    int half_d = d/2;
-    int count = 0;
-    Median median = (d % 2 == 0) ?
-      (l ->  (l.get(half_d-1) + l.get(half_d))/2.0f) :
-      (l -> l.get(half_d)*1.0f);
-    Collections.sort(history);
-    int k = 0;
+    int old = 201;
+    int count = 0, v;
+    float m;
     for(int i = d; i < n ; i++){
-      history.remove(new Integer(old));
-      while(history.get(k) < expenditure[i]) k++;
-      history.add(k, expenditure[i]);
-      float m = median.of(history);
-      if(expenditure[i] >= 2*m)
+      history[old]--;
+      v = expenditure[i];
+      history[v]++;
+      m = median(history, d);
+      if(v >= 2*m)
         count++;
       old = expenditure[i-d];
     }
-    return count;
+    return count - 1;
   }
 
   public static void main(String[] args) {
